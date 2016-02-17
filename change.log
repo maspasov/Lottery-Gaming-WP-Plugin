@@ -1,0 +1,35 @@
+lotto-yard Version 1.0.0
+
+lotto-yard Version 1.0.1
+
+- Added lotto_get_countries function in data-arrays.php
+- Fixed Controller.php delete empty view in theme
+- Change signup function in Users class, registration new user with email and password
+- Added lotto_page_template_redirect - if not login redirect to home page
+- clean_url filter not load in admin panel
+
+lotto-yard Version 1.0.2
+
+- XSS vulnerability fix
+- insertNavidadNumbersActions requires empty view
+- append_language_class function fixed, if not defined WPML global variables
+
+lotto-yard Version 1.0.3
+
+- new discounts
+- small fixes(controller, responseHandler)
+- data mapper update
+
+lotto-yard Version 1.0.4
+
+- discounts fix
+- login, signup fix(error messages)
+- new option added in wp admin -> currency
+
+lotto-yard Version 1.0.5
+
+- add cart functionality
+
+lotto-yard Version 1.0.6
+
+- add error handling
