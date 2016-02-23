@@ -1,7 +1,15 @@
-LotteryMaster - prod -"lotto-yard-lm-prod-1.0.0"
-LotteryMaster - dev - "lotto-yard-lm-dev-1.0.6"
+LottoBooker - dev -"lotto-yard-1.0.0"
 
-Domlotto - prod - "lotto-yard-domlotto-1.0.4"
-Domlotto - dev - "lotto-yard-domlotto-1.0.4"
+Domlotto - prod - "lotto-yard-1.0.4"
+Domlotto - dev - "lotto-yard-1.0.4"
 
-LotteryClub dev - "lotto-yard-domlotto-1.0.6"
+LotteryMaster dev - "lotto-yard-lm-dev-1.0.6"
+LotteryMaster prod - "lotto-yard-lm-dev-1.0.6"
+
+LotteryClub dev - "lotto-yard-1.0.6"
+
+IQLotto dev - "lotto-yard-1.0.6"
+
+LottoLucker dev - "lotto-yard-1.0.6"
+
+Lottobewin - ""
