@@ -1,85 +1,6 @@
 <?php
-/*
-Plugin Name: Lotto Yard Devs
-Description: Lotto Yard Plugin
-Version: 1.0.6
-Author URI: Lotto Yard Devs
- */
 
-//TODO - option for ENV in admin panel 
-define('ENVIRONMENT', 'production');
-
-if (defined('ENVIRONMENT')) {
-    switch (ENVIRONMENT) {
-        case 'development':
-            error_reporting(E_ALL);
-            break;
-        case 'production':
-            error_reporting(0);
-            break;
-        default:
-            exit('The application environment is not set correctly.');
-    }
-}
-
-define('LOTTO_YARD', 'lotto-yard');
-define('LOTTO_PLUGIN_ROOT', dirname(__FILE__) . DIRECTORY_SEPARATOR);
-
-include_once(LOTTO_PLUGIN_ROOT.'lib/plugin-updates/plugin-update-checker.php');
-include_once(LOTTO_PLUGIN_ROOT.'lib/carbon-fields/carbon-fields.php');
-include_once(LOTTO_PLUGIN_ROOT.'options/theme-options.php');
-include_once(LOTTO_PLUGIN_ROOT.'options/custom-fields.php');
-include_once(LOTTO_PLUGIN_ROOT.'data-arrays.php');
-
-$whitelist = array('127.0.0.1', "::1");
-define('IS_LOCALHOST', in_array($_SERVER['REMOTE_ADDR'], $whitelist));
-
-if (true) { //TODO - crb option for cart in admin panel
-    include_once(LOTTO_PLUGIN_ROOT.'cart/Cart.php');
-}
-
-if (!class_exists('Init')) {
-    include_once(LOTTO_PLUGIN_ROOT.'api/Init.php');
-}
-
-if (!class_exists('Discounts')) {
-    include_once(LOTTO_PLUGIN_ROOT.'api/Discounts.php');
-}
-
-/**
- * Update Plugin Checker
- */
-$MyUpdateChecker = PucFactory::buildUpdateChecker(
-   'http://pluginsprod.lottoyard.com/wp-update-server/?action=get_metadata&slug=' . LOTTO_YARD, //Metadata URL.
-   __FILE__, //Full path to the main plugin file.
-   LOTTO_YARD //Plugin slug. Usually it's the same as the name of the directory.
-);
-
-/**
- * A safer alternative of $_REQUEST - only for $_GET and $_POST
- * @param  string $key the name of the requested parameter
- * @return the requested parameter value
- */
-function crb_request_param($key = '')
-{
-    $value = false;
-    if (!$key) {
-        return $value;
-    }
-
-    if (isset($_POST[$key])) {
-        $value = $_POST[$key];
-    } elseif (isset($_GET[$key])) {
-        $value = $_GET[$key];
-    }
-
-    return $value;
-}
-
-define('TOKEN', carbon_get_theme_option('lotto_access_token')); //'PlamenToken89'
-define('BASE_API_URL', carbon_get_theme_option('lotto_base_api_url'));//'https://5.100.249.154/api/'
-define('CASHIER_URL', carbon_get_theme_option('lotto_cashier_url')); //'https://5.100.249.154/Cashier/'
-define('BRAND_ID', carbon_get_theme_option('brand_id'));
+include_once(dirname(__FILE__) . '/common.php');
 
 /* Reblaze client IP */
 if (!empty($_SERVER["HTTP_X_REAL_IP"])) {
@@ -292,7 +213,7 @@ function Login($email, $password)
         $temp = json_decode(apiCall("userinfo/get-member-money-balance", $data), 1);
         unset($_SESSION['user_balance']);
         $_SESSION['user_balance'] = $temp;
-        $_SESSION['user_balance']['currency'] = carbon_get_theme_option('currency');
+        $_SESSION['user_balance']['currency'] = SITE_CURRENCY;
     }
 }
 
@@ -646,50 +567,50 @@ function parameter_queryvars($qvars)
 
 //TODO Create Class for API Call & Set Transients
 if (!function_exists('get_transient_by_url')) :
-function get_transient_by_url($transient_key, $api_method, $request=null)
-{
-    $transient = get_transient($transient_key);
-    if (!empty($transient)) {
-        return  $transient;
-    } else {
-        $url = BASE_API_URL.$api_method;
-
-        $data = $request;
-	    $data["BrandID"] = BRAND_ID;
-	    $data_string = json_encode($data);
-
-        $response = wp_remote_post($url, array(
-            'headers' => array(
-                'Token' => TOKEN,
-                'Content-Type' => 'application/json'
-            ),
-            'sslverify' => false,
-            'body' => $data_string
-        ));
-
-        if (is_wp_error($response)) {
-            $error_message = $response->get_error_message();
-            return "Something went wrong: $error_message";
+    function get_transient_by_url($transient_key, $api_method, $request=null)
+    {
+        $transient = get_transient($transient_key);
+        if (!empty($transient)) {
+            return  $transient;
         } else {
-            $decode_response = json_decode(wp_remote_retrieve_body($response), false);
-            set_transient($transient_key, $decode_response, 60 * 5);
-            return $decode_response;
+            $url = BASE_API_URL.$api_method;
+
+            $data = $request;
+            $data["BrandID"] = BRAND_ID;
+            $data_string = json_encode($data);
+
+            $response = wp_remote_post($url, array(
+                'headers' => array(
+                    'Token' => TOKEN,
+                    'Content-Type' => 'application/json'
+                ),
+                'sslverify' => false,
+                'body' => $data_string
+            ));
+
+            if (is_wp_error($response)) {
+                $error_message = $response->get_error_message();
+                return "Something went wrong: $error_message";
+            } else {
+                $decode_response = json_decode(wp_remote_retrieve_body($response), false);
+                set_transient($transient_key, $decode_response, 60 * 5);
+                return $decode_response;
+            }
         }
     }
-}
 endif;
 
 add_action('after_setup_theme', 'get_data_from_api');
 if (!function_exists('get_data_from_api')) :
-function get_data_from_api()
-{
-    global $prices_by_brand_and_productid; //for special lottary games home page/cart
-    global $all_brand_draws;
-    global $lotteries_results;
-    $prices_by_brand_and_productid = get_transient_by_url('prices_by_brand_and_productid', 'globalinfo/get-prices-by-brand-and-productid', array('productIds'=>'1,2,3,14'));
-    $all_brand_draws = get_transient_by_url('all_brand_draws', 'globalinfo/get-all-brand-draws');
-    $lotteries_results = get_transient_by_url('lotteries_results', 'globalinfo/get-lotteries-results');
-}
+    function get_data_from_api()
+    {
+        global $prices_by_brand_and_productid; //for special lottary games home page/cart
+        global $all_brand_draws;
+        global $lotteries_results;
+        $prices_by_brand_and_productid = get_transient_by_url('prices_by_brand_and_productid', 'globalinfo/get-prices-by-brand-and-productid', array('productIds'=>'1,2,3,14'));
+        $all_brand_draws = get_transient_by_url('all_brand_draws', 'globalinfo/get-all-brand-draws');
+        $lotteries_results = get_transient_by_url('lotteries_results', 'globalinfo/get-lotteries-results');
+    }
 endif;
 
 add_filter('body_class', 'append_language_class');

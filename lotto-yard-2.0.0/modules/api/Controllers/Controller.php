@@ -132,7 +132,7 @@ class Controller
     {
         // Default Currency
         $_SESSION['user_balance'] = $this->data;
-        $_SESSION['user_balance']['currency'] = carbon_get_theme_option('currency');
+        $_SESSION['user_balance']['currency'] = SITE_CURRENCY;
 
         $this->view->assignData($this->data);
         $this->view->render('json');

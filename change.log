@@ -33,3 +33,21 @@ lotto-yard Version 1.0.5
 lotto-yard Version 1.0.6
 
 - add error handling
+
+lotto-yard Version 2.0.0
+
+- update carbon plugin
+- change folder structure
+- fixed ngCart & Cachier 
+- fixed some bugs in error handling
+
+lotto-yard Version 2.0.0
+
+- change of folder structure
+- fixed lotteryRules function in GlobalInfo Class
+- fixed getLotteryTypeByName function in DataMapper Class
+
+
+TODO for next version:
+
+- getMemberPurchaseCompleteDetailsForCart move to Init class

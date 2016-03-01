@@ -1,15 +1,23 @@
-LottoBooker - dev -"lotto-yard-1.0.0"
+	Lottobewin - ""
 
-Domlotto - prod - "lotto-yard-1.0.4"
-Domlotto - dev - "lotto-yard-1.0.4"
+////////////////////////////////////////////////////////////////////////////////
+	
+	LottoBooker - dev -"lotto-yard-1.0.0"
 
-LotteryMaster dev - "lotto-yard-lm-dev-1.0.6"
-LotteryMaster prod - "lotto-yard-lm-dev-1.0.6"
+////////////////////////////////////////////////////////////////////////////////
+	
+	Domlotto - prod - "lotto-yard-1.0.4"
+	Domlotto - dev - "lotto-yard-1.0.4"
 
-LotteryClub dev - "lotto-yard-1.0.6"
+////////////////////////////////////////////////////////////////////////////////
 
-IQLotto dev - "lotto-yard-1.0.6"
+	LotteryMaster dev - "lotto-yard-1.0.6"
+	LotteryMaster prod - "lotto-yard-1.0.6"
 
-LottoLucker dev - "lotto-yard-1.0.6"
+	IQLotto dev - "lotto-yard-1.0.6"
 
-Lottobewin - ""
+	LottoLucker dev - "lotto-yard-1.0.6"
+
+////////////////////////////////////////////////////////////////////////////////
+
+	LotteryClub dev - "lotto-yard-2.0.0"

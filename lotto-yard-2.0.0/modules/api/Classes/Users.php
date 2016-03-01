@@ -21,8 +21,7 @@ class Users extends Data
         if (isset($this->postData['lastname'])) {
             $data['lastName']  = str_replace('\\', '', $this->postData['lastname']);
         }
-        
-        $data['PhoneNumber'] = $this->postData['phone'];
+
         $data['AffiliateId'] = $_SESSION['bta'] == null ? 0 : $_SESSION['bta'];
         $data['cxd']         = $_SESSION['cxd'] == null ? 0 : $_SESSION['cxd'];
         $data['BrandID']     = BRAND_ID;
@@ -79,17 +78,13 @@ class Users extends Data
 
     public function updatePassword()
     {
-        $memberID = 0;
-        if (isset($_SESSION['ResetMemberId'])) {
-            $memberID = $_SESSION['ResetMemberId'];
-        }
-
-        if (isset($_SESSION['user_data']) && count($_SESSION['user_data']) > 0) {
+        if (!empty($_SESSION['user_data'])) {
             $memberID = $_SESSION['user_data']['MemberId'];
         }
 
-        if (! empty($_SESSION['ResetMemberId'])) {
-            $_SESSION['user_data']['MemberId'] = $_SESSION['ResetMemberId'];
+        if (!empty($_SESSION['ResetMemberId'])) {
+            $memberID = $_SESSION['ResetMemberId'];
+            $_SESSION['user_data']['MemberId'] = $memberID;
         }
 
         $this->processedData = array(
