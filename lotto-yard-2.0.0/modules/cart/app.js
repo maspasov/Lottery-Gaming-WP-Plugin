@@ -7,8 +7,9 @@ icelotto.value('cartTranslationUrl', CART_CONFIG.CART_TRANSLATION_URL);
 
 //paymentsystem List
 icelotto.constant("PaymentSystems", [
-                            { "name": "creditcard", "logo": "creditcards.png", "processor": "CreditCard", "needmoreinfo": 1 }]);
-                            // { "name": "skrill", "logo": "skrilllogo.png", "processor": "Skrill", "needmoreinfo": 0 },
+                            { "name": "creditcard", "logo": "creditcards.png", "processor": "CreditCard", "needmoreinfo": 1 },
+                            { "name": "skrill", "logo": "skrilllogo.png", "processor": "Skrill", "needmoreinfo": 0 }
+]);
                             // { "name": "yandex", "logo": "yandexlogo.png", "processor": "AccentPayYandex", "needmoreinfo": 0 },
                             // { "name": "moneta", "logo": "monetalogo.png", "processor": "AccentPayMonetaRu", "needmoreinfo": 0 },
                             // { "name": "c24", "logo": "c24logo.png", "processor": "AccentPayContact24", "needmoreinfo": 1 },
@@ -26,11 +27,27 @@ icelotto.constant("ErrorMessages",
     {
         "en": [
             { "error": "'Email' is not a valid email address.", "text": "Email is not a valid email address."},
-            { "error": "Email already exists.", "text": "You already have an account with us, please login" },
-            { "error": "Please insert valid password", "text": "Password length must be between 7 to 10 characters" },
-            { "error": "Please insert valid full name", "text": "Name must not include numbers and be 2-20 characters." },
-            { "error": "'Email' should not be empty.", "text": "Invalid Email format" },
-            { "error": "Property Mobile Number is not a valid phone number!", "text": "Phone should contain numbers only!!" }
+            { "error": "Email already exists.", "text": "You already have an account with us, please login." },
+            { "error": "Please insert valid password", "text": "Password length must be between 7 to 20 characters." },
+            { "error": "Please insert valid full name", "text": "Please insert valid full name." },
+            { "error": "Name must not include numbers and be 2-20 characters.", "text": "Name must not include numbers and be 2-20 characters." },
+            { "error": "'Email' should not be empty", "text": "'Email' should not be empty." },
+            { "error": "Invalid Email format", "text": "Invalid Email format." },
+            { "error": "Property Mobile Number is not a valid phone number!", "text": "Phone should not be empty." },
+            { "error": "Credit card number length is invalid", "text": "Credit card number length is invalid." },
+            { "error": "The Min Deposit Is 2EUR", "text": "The Min Deposit Is 2EUR." },
+            { "error": "CardNumber -> Card Number is not a valid credit card number", "text": "Credit Card number is invalid." },
+            { "error": "CreditCardAlreadyExist", "text": "This Credit Card already exists." },
+            { "error": "Enter credit card", "text": "Enter credit card." },
+            { "error": "Please agree with our Terms and Conditions!", "text": "Please agree with our Terms and Conditions!" },
+            { "error": "Please type your full name", "text": "Please type your full name." },
+            { "error": "Card Number is not a valid credit card number", "text": "Card Number is not a valid credit card number." },
+            { "error": "Please insert Expiration Date", "text": "Please insert Expiration Date." },
+            { "error": "Please insert Expiration Year", "text": "Please insert Expiration Year." },
+            { "error": "Please insert Expiration Month", "text": "Please insert Expiration Month." },
+            { "error": "Please insert your cvv number", "text": "Please insert your cvv number." },
+            { "error": "Please enter valid card expiration date!", "text": "Please enter valid card expiration date." },
+            { "error": "The Min Deposit Is 5EUR", "text": "The Min Deposit Is 5EUR." },
         ],
         "de": [
             { "error": "Email already exists.", "text": "Sie haben bereits ein Konto bei uns, bitte anmelden" },

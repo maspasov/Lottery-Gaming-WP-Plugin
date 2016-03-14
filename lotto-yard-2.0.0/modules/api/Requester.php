@@ -1,12 +1,5 @@
 <?php
 
-/**
- * Created by PhpStorm.
- * User: yanislav
- * Date: 9/9/15
- * Time: 4:21 PM
- */
-
 class Requester
 {
     private $response;

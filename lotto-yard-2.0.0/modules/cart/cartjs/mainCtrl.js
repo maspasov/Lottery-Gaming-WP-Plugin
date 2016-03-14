@@ -1,18 +1,19 @@
 ﻿angular.module('myApp')
     .controller('mainCtrl', [
             '$scope', '$http', 'ngCart', '$rootScope', 'ngCart.lottoyard.api', '$q', '$timeout', function ($scope, $http, ngCart, $rootScope, LottoYardService, $q, $timeout) {
-
+            	$ = jQuery;
                 //setting globals
                 ngCart.setFastProcessingTax(0.79);
                 // ngCart.setShipping(2.99);
                 ngCart.setAffiliateCode(CONFIG.affiliateId);
+                ngCart.setReedemCode(CONFIG.cartPromoCode);
                 $rootScope.isFirstTimePurchase = '';
                 $rootScope.isAuthenticated = CONFIG.isLogin;
                 $rootScope.cartPartialsPath = CART_CONFIG.CART_PARTIALS_URI;
                 $rootScope.cartUrlWithLang = '/cart/';
                 $rootScope.language = 'en';
                 $rootScope.sessionId = CONFIG.sessionId;
-                // console.log('$rootScope.language', $rootScope.language);
+                console.log('$rootScope.language', $rootScope.language);
                 $rootScope.topJacktop = {};
 
                 // console.log('isFirstTimePurchase', $rootScope.isFirstTimePurchase);
@@ -30,7 +31,8 @@
                 $scope.initCartCalls = function () {
 
                     LottoYardService.getAllBrandDraws().then(function (data) {
-                        // console.log(data);
+                        //console.log(data);
+                        //debugger;
                         var top = data[0];
                         angular.forEach(function (item) {
                             if (item.Jackpot > top.Jackpot) {
@@ -38,7 +40,7 @@
                             }
                         });
                         $rootScope.topJacktop = top;
-                        // console.log('Top jacktop lottery: ', top);
+                        console.log('Top jacktop lottery: ', top);
                     });
                     LottoYardService.getAllLotteriesRules()
                         .then(LottoYardService.getAllProductsRules())
@@ -93,21 +95,21 @@
                 }
 
                 $scope.saveToCartNavidad = function (item, redirectToCart) {
-                    console.log(item);
+                    //debugger;
+                    //console.log(item);
 
-                    LottoYardService.getAllLotteriesRules()
-                        .then(LottoYardService.getAllProductsRules())
-                        .then(LottoYardService.getProductPrices())
-                        .then(function () {
-                            ngCart.addItem(item.id, parseFloat(item.discount), 0, item.groupSettingsIndex, 0, 0, 0, 0,
-                                0, item.lotteryType, item.noofdraws, item.nooflines, item.numbers, item.originalprice, 0, 0, "single", item.totalCost, 0, 0, item.ticketNumberIds, item.productType, item.timestamp);
-                            if (redirectToCart) window.location = cartUrlWithLang;
-                        });
-                }
+                    LottoYardService.getAllLotteriesRules().then(function(){
+                        LottoYardService.getAllProductsRules().then(function(){
+                            LottoYardService.getProductPrices().then(function(){
+                                ngCart.addItem(item.id, parseFloat(item.discount), 0, item.groupSettingsIndex, 0, 0, 0, 0,
+                                    0, item.lotteryType, item.noofdraws, item.nooflines, item.numbers, item.originalprice, 0, 0, "single", item.totalCost, 0, 0, item.ticketNumberIds, item.productType, item.timestamp);
+                                if (redirectToCart) window.location = cartUrlWithLang;
+                            })
+                        })
+                    });
+                };
 
                 $scope.saveToCart = function (item, redirectToCart) {
-                    //debugger;
-                    console.log(item);
 
                     LottoYardService.getAllLotteriesRules()
                         .then(LottoYardService.getAllProductsRules())

@@ -1,8 +1,8 @@
 <?php
-if (!class_exists('PucDebugBarPlugin')) {
+if (!class_exists('PucDebugBarPlugin', false)) {
     class PucDebugBarPlugin
     {
-        /** @var PluginUpdateChecker */
+        /** @var PluginUpdateChecker_3_0 */
     private $updateChecker;
 
         public function __construct($updateChecker)
@@ -25,7 +25,7 @@ if (!class_exists('PucDebugBarPlugin')) {
     public function addDebugBarPanel($panels)
     {
         require_once dirname(__FILE__) . '/debug-bar-panel.php';
-        if (current_user_can('update_plugins') && class_exists('PluginUpdateCheckerPanel')) {
+        if (current_user_can('update_plugins') && class_exists('PluginUpdateCheckerPanel', false)) {
             $panels[] = new PluginUpdateCheckerPanel($this->updateChecker);
         }
         return $panels;
@@ -40,7 +40,7 @@ if (!class_exists('PucDebugBarPlugin')) {
             'puc-debug-bar-style',
             plugins_url("/css/puc-debug-bar.css", __FILE__),
             array('debug-bar'),
-            '20121026-3'
+            '20130927'
         );
 
         wp_enqueue_script(

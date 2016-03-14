@@ -10,7 +10,7 @@ function init_cart()
     wp_enqueue_script('angular-cache', plugin_dir_url(__FILE__) . 'libs/angular-cache.min.js', array('jquery'), '10-02-2016', true);
     wp_enqueue_script('angular-resource', plugin_dir_url(__FILE__) . 'libs/angular-resource.min.js', array('jquery'), '10-02-2016', true);
     wp_enqueue_script('fancybox', plugin_dir_url(__FILE__) . 'libs/fancybox/jquery.fancybox.pack.js', array('jquery'), '10-02-2016', false);
-    wp_enqueue_style('fancybox-style', plugin_dir_url(__FILE__) .'libs/fancybox/jquery.fancybox.css', array('jquery'), '10-02-2016');
+    wp_enqueue_style('fancybox-style', plugin_dir_url(__FILE__) .'libs/fancybox/jquery.fancybox.css', array(), '10-02-2016');
     wp_enqueue_script('angular-fancybox-plus', plugin_dir_url(__FILE__) . 'libs/angular-fancybox-plus.js', array('jquery'), '10-02-2016', true);
     wp_register_script('angular-app', plugin_dir_url(__FILE__) . 'app.js', array('jquery'), '10-02-2016', true);
 

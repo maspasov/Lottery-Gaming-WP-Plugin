@@ -26,28 +26,19 @@ lotto-yard Version 1.0.4
 - login, signup fix(error messages)
 - new option added in wp admin -> currency
 
-lotto-yard Version 1.0.5
-
-- add cart functionality
-
 lotto-yard Version 1.0.6
 
 - add error handling
 
 lotto-yard Version 2.0.0
 
-- update carbon plugin
-- change folder structure
-- fixed ngCart & Cachier 
-- fixed some bugs in error handling
-
-lotto-yard Version 2.0.0
-
+- add ngCart
 - change of folder structure
+- update carbon plugin
 - fixed lotteryRules function in GlobalInfo Class
 - fixed getLotteryTypeByName function in DataMapper Class
-
+- fixed some bugs in error handling
 
 TODO for next version:
 
-- getMemberPurchaseCompleteDetailsForCart move to Init class
+- create class for data-transients.php ,executeGenericApiCall move to this class

@@ -1,12 +1,5 @@
 <?php
 
-/**
- * Created by PhpStorm.
- * User: yanislav
- * Date: 9/9/15
- * Time: 2:02 PM
- */
-
 require 'Requester.php';
 require 'ResponseHandler.php';
 

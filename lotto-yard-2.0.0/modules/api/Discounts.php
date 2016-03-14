@@ -1,12 +1,5 @@
 <?php
 
-/**
- * Created by PhpStorm.
- * User: yanislav
- * Date: 9/28/15
- * Time: 16:51 PM
- */
-
 class Discounts
 {
     private $period, $lotteryName, $type;

@@ -16,7 +16,13 @@ class Cashier extends Data
         $data['SessionId'] = empty($_SESSION['user_data']['UserSessionId']) ? 0 : $_SESSION['user_data']['UserSessionId'];
         $data['AffiliateId'] = empty($_SESSION['bta']) ? 0 : $_SESSION['bta'];
         $data['PhoneOrEmail'] = $_SESSION['user_data']['Email'];
-        
+        $data['IP'] = $_SERVER['REMOTE_ADDR'];
+        $utm_code = '';
+        if (!empty($_SESSION["utm_campaign"])) {
+            $utm_code = $_SESSION["utm_campaign"];
+        }
+        $data = str_replace("{emailcode}", $utm_code, $data);
+
         $this->processedData = $this->replaceMemberId($data);
     }
 

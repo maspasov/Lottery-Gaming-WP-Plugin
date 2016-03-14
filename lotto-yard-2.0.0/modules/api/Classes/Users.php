@@ -1,12 +1,5 @@
 <?php
 
-/**
- * Created by PhpStorm.
- * User: yanislav
- * Date: 9/9/15
- * Time: 2:05 PM
- */
-
 require dirname(__FILE__) . '/../Data/Data.php';
 
 class Users extends Data
@@ -22,6 +15,7 @@ class Users extends Data
             $data['lastName']  = str_replace('\\', '', $this->postData['lastname']);
         }
 
+        $data['PhoneNumber'] = $this->postData['phone'];
         $data['AffiliateId'] = $_SESSION['bta'] == null ? 0 : $_SESSION['bta'];
         $data['cxd']         = $_SESSION['cxd'] == null ? 0 : $_SESSION['cxd'];
         $data['BrandID']     = BRAND_ID;

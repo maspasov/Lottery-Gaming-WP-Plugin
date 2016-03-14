@@ -22,6 +22,10 @@ function register_my_session()
         $_SESSION["bta"] = trim($_GET["bta"]);
     }
 
+    if (isset($_GET["prc"])) {
+        $_SESSION["prc"] = $_GET["prc"];
+    }
+
     $referer = '';
 
     if (!empty($_SERVER['HTTP_REFERER'])) {
@@ -36,7 +40,7 @@ function register_my_session()
     }
 
     if (isset($_GET["utm_campaign"])) {
-        $_SESSION["utm_campaign"] = "EmailCode=". trim($_GET["utm_campaign"]);
+        $_SESSION["utm_campaign"] = trim($_GET["utm_campaign"]);
     }
 }
 
@@ -565,54 +569,6 @@ function parameter_queryvars($qvars)
     return $qvars;
 }
 
-//TODO Create Class for API Call & Set Transients
-if (!function_exists('get_transient_by_url')) :
-    function get_transient_by_url($transient_key, $api_method, $request=null)
-    {
-        $transient = get_transient($transient_key);
-        if (!empty($transient)) {
-            return  $transient;
-        } else {
-            $url = BASE_API_URL.$api_method;
-
-            $data = $request;
-            $data["BrandID"] = BRAND_ID;
-            $data_string = json_encode($data);
-
-            $response = wp_remote_post($url, array(
-                'headers' => array(
-                    'Token' => TOKEN,
-                    'Content-Type' => 'application/json'
-                ),
-                'sslverify' => false,
-                'body' => $data_string
-            ));
-
-            if (is_wp_error($response)) {
-                $error_message = $response->get_error_message();
-                return "Something went wrong: $error_message";
-            } else {
-                $decode_response = json_decode(wp_remote_retrieve_body($response), false);
-                set_transient($transient_key, $decode_response, 60 * 5);
-                return $decode_response;
-            }
-        }
-    }
-endif;
-
-add_action('after_setup_theme', 'get_data_from_api');
-if (!function_exists('get_data_from_api')) :
-    function get_data_from_api()
-    {
-        global $prices_by_brand_and_productid; //for special lottary games home page/cart
-        global $all_brand_draws;
-        global $lotteries_results;
-        $prices_by_brand_and_productid = get_transient_by_url('prices_by_brand_and_productid', 'globalinfo/get-prices-by-brand-and-productid', array('productIds'=>'1,2,3,14'));
-        $all_brand_draws = get_transient_by_url('all_brand_draws', 'globalinfo/get-all-brand-draws');
-        $lotteries_results = get_transient_by_url('lotteries_results', 'globalinfo/get-lotteries-results');
-    }
-endif;
-
 add_filter('body_class', 'append_language_class');
 function append_language_class($classes)
 {
@@ -651,3 +607,65 @@ function lotto_page_template_redirect()
     }
 }
 add_action('template_redirect', 'lotto_page_template_redirect');
+
+if (!function_exists('lotto_fix_product_name')) :
+    function lotto_fix_product_name($product)
+    {
+        $correct_names = array(
+            'personalandgroup'         => 'Personal And Group',
+            'toplottopersonal'         => 'Top Lotto Personal',
+            'toplottopersonalandgroup' => 'Top Lotto Personal And Group',
+            'freeproduct'              => 'Free Product',
+            'groupvip1'                => 'Group Vip 1',
+            'groupvip2'                => 'Group Vip 2',
+            'groupvip3'                => 'Group Vip 3',
+            'groupvip4'                => 'Group Vip 4',
+            'groupvip5'                => 'Group Vip 5',
+            'toplottogroup'            => 'Top Lotto Group',
+            'navidadgroup'             => 'Navidad Group',
+            'freesingle'               => 'Free Single',
+            'specialholiday'           => 'Special Holiday',
+            'specialholidaygroup'      => 'Special Holiday Group',
+            'onemillionpackage'        => 'One Million Package',
+            'elniñogroup'              => 'ElNiño Group',
+        );
+
+        $formatted_product_name = trim(strtolower($product));
+        if (array_key_exists($formatted_product_name, $correct_names)) {
+            $product = $correct_names[$formatted_product_name];
+        }
+
+        return $product;
+    }
+endif;
+
+add_filter('body_class', 'lotto_browser_body_class');
+function lotto_browser_body_class($classes = '')
+{
+    global $is_lynx, $is_gecko, $is_IE, $is_opera, $is_NS4, $is_safari, $is_chrome, $is_iphone;
+    if (!empty($_SESSION['user_data'])) {
+        $classes[] = 'is-lotto-login';
+    }
+    if ($is_lynx) {
+        $classes[] = 'lynx';
+    } elseif ($is_gecko) {
+        $classes[] = 'gecko';
+    } elseif ($is_opera) {
+        $classes[] = 'opera';
+    } elseif ($is_NS4) {
+        $classes[] = 'ns4';
+    } elseif ($is_safari) {
+        $classes[] = 'safari';
+    } elseif ($is_chrome) {
+        $classes[] = 'chrome';
+    } elseif ($is_IE) {
+        $classes[] = 'ie';
+    } else {
+        $classes[] = 'unknown';
+    }
+
+    if ($is_iphone) {
+        $classes[] = 'iphone';
+    }
+    return $classes;
+}

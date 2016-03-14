@@ -1,12 +1,5 @@
 <?php
 
-/**
- * Created by PhpStorm.
- * User: yanislav
- * Date: 9/11/15
- * Time: 4:34 PM
- */
-
 class DataMapper
 {
     private $postData;

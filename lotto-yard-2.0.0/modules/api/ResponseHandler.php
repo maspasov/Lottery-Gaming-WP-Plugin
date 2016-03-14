@@ -1,12 +1,5 @@
 <?php
 
-/**
- * Created by PhpStorm.
- * User: yanislav
- * Date: 9/12/15
- * Time: 12:18 PM
- */
-
 require 'Controllers/Controller.php';
 require 'ErrorHandler.php';
 

@@ -1,12 +1,5 @@
 <?php
 
-/**
- * Created by PhpStorm.
- * User: yanislav
- * Date: 9/11/15
- * Time: 1:19 PM
- */
-
 require dirname(__FILE__) . '/../View.php';
 require dirname(__FILE__) . '/../Data/DataMapper.php';
 

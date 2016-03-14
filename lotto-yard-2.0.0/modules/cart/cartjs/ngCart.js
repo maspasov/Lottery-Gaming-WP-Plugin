@@ -43,7 +43,6 @@ angular.module('ngCart', ['ngCart.directives'])
                     items: []
                 };
 
-            //       console.log(this);
             // console.log(this.$cart);
             // debugger;
             };
@@ -611,7 +610,7 @@ angular.module('ngCart', ['ngCart.directives'])
             };
 
             item.prototype.setGroupnodraws = function (groupnodraws) {
-                this._groupnodraws = (groupnodraws);
+                this._groupnodraws = parseInt(groupnodraws);
             };
 
             item.prototype.getGroupnodraws = function () {
@@ -1235,15 +1234,16 @@ angular.module('ngCart', ['ngCart.directives'])
             }
 
             $scope.redirectToPlayPageTopJackpot = function () {
-                window.location = $rootScope.topJacktop.LotteryName;
+                window.location = CONFIG.homeURL +'/'+ $rootScope.topJacktop.LotteryName.toLowerCase() + '-lottery/';
             }
 
             $scope.initCart = function () {
-                // debugger;
+                 //debugger;
                 if ($scope.isAuthenticated) {
 
                     if (ngCart.getItems().length > 0) {
                         var mapper = new Mapper(ngCart.getCart());
+
                         var data = mapper.PrepareOrder();
 
                         LottoyardService.prepareOrder(data).then(function (resp) {
@@ -1285,23 +1285,25 @@ angular.module('ngCart', ['ngCart.directives'])
             $scope.beforeCheckOutCall = beforeCheckOutCall;
 
             $scope.editPaymentMethods = function () {
+                $scope.creditCardError = false;
                 $scope.section.selectionPaymentTemplate = 'new';
             }
 
             $scope.signin = function ($event, user) {
-                // debugger;
+                //debugger;
+                var emailReg = /^([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?$/;
                 $event.preventDefault();
                 if (typeof (user) === 'undefined' || user === "") {
                     $scope.signinError = true;
-                    $scope.errorText = "Username or password are incorrect";
+                    $scope.errorText = "Email and Password should not be empty.";
                     return;
-                } else if (typeof (user.email) === 'undefined' || user.email ==="") {
+                } else if (typeof (user.email) === 'undefined' || !emailReg.test( user.email )) {
                     $scope.signinError = true;
                     $scope.errorText = "Username is not valid.";
                     return;
                 } else if (typeof (user.password) === 'undefined' || user.password ==="") {
                     $scope.signinError = true;
-                    $scope.errorText = "Password is not valid.";
+                    $scope.errorText = "Password should not be empty.";
                     return;
                 }
 
@@ -1336,27 +1338,28 @@ angular.module('ngCart', ['ngCart.directives'])
                 $scope.errorText = "";
 
                 LottoyardService.forgotPass(user).then(function (resp) {
-                    // debugger;
-                    // console.log(resp);
+                     //debugger;
+                     //console.log(resp);
                     if (resp.error_msg === "We cannot send you the password") {
                         $scope.signinError = true;
-                        $scope.errorText = resp;
+                        $scope.errorText = resp.error_msg;
                     } else if(resp.error_msg === 'Email not found') {
                         $scope.signinError = true;
-                        $scope.errorText = resp;
+                        $scope.errorText = resp.error_msg;
                     } else {
                         $scope.signinError = true;
-                        $scope.errorText = resp;
+                        $scope.errorText = resp.msg;
                         clearPersonalInfo();
-                        setTimeout(function() {
-                             window.location = CONFIG.homeURL;
-                        }, 500);
+                        /*
+                         setTimeout(function() {
+                            window.location = CONFIG.homeURL;
+                         }, 500);
+                        */
                     }
                 });
             }
 
             $scope.signUp = function ($event, user) {
-                //debugger;
 
                 $scope.signupErrorText = [];
                 $event.preventDefault();
@@ -1365,23 +1368,38 @@ angular.module('ngCart', ['ngCart.directives'])
                     $scope.signupErrorText.push("Error");
                     return;
                 }
-                if (user.email === "") {
-                    $scope.signupError = true;
-                    $scope.signupErrorText.push({ ErrorMessage: "'Email' should not be empty." });
-                    return;
-                }
-                if (user.password === "" || user.password.length < 6) {
-                    $scope.signupError = true;
-                    $scope.signupErrorText.push({ ErrorMessage: "Please insert valid password" });
-                    return;
-                }
                 if (user.fullname === "") {
                     $scope.signupError = true;
                     $scope.signupErrorText.push({ ErrorMessage: "Please insert valid full name" });
                     return;
                 }
 
-                if (user.MobileNumber === '') {
+                if (user.fullname.length < 2 || user.fullname.length > 20 ) {
+                    $scope.signupError = true;
+                    $scope.signupErrorText.push({ ErrorMessage: "Name must not include numbers and be 2-20 characters." });
+                    return;
+                }
+
+                if (user.email === "") {
+                    $scope.signupError = true;
+                    $scope.signupErrorText.push({ ErrorMessage: "'Email' should not be empty" });
+                    return;
+                }
+
+                var emailReg = /^([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?$/;
+                if (!emailReg.test( user.email )) {
+                    $scope.signupError = true;
+                    $scope.signupErrorText.push({ ErrorMessage: "Invalid Email format" });
+                    return;
+                }
+
+                if (user.password === "" || user.password.length < 7 || user.password.length > 20) {
+                    $scope.signupError = true;
+                    $scope.signupErrorText.push({ ErrorMessage: "Please insert valid password" });
+                    return;
+                }
+                var phoneReg = /^\+?[0-9 \-()]{6,25}$/;
+                if (user.MobileNumber === '' || typeof (user.MobileNumber) === 'undefined' || !phoneReg.test(jQuery.trim(user.MobileNumber))) {
                     $scope.signupError = true;
                     $scope.signupErrorText.push({ ErrorMessage: "Property Mobile Number is not a valid phone number!" });
                     return;
@@ -1398,8 +1416,10 @@ angular.module('ngCart', ['ngCart.directives'])
                 user.AffiliateId = $rootScope.affiliateId;
                 if (!$scope.signupError) {
                     LottoyardService.signUp(user).then(function (resp) {
-                        // debugger;
-                        // console.log(resp);
+                        //console.log(resp);
+                        //var resp = JSON.parse(response);
+                        //debugger;
+
                         if (typeof (resp.Result) !== 'undefined' && typeof (resp.Result.UserSessionId) !== 'undefined') {
                             clearPersonalInfo();
                             // sessionStorage.setItem('firepixel', 'https://go.icelotto.com/dynamicpixels/LeadRegistered/?userId=' + resp.MemberId + '&IsoCountry=' + resp.isoCountry);
@@ -1410,12 +1430,9 @@ angular.module('ngCart', ['ngCart.directives'])
                             // window.location.href = $rootScope.cartUrlWithLang + "?sessionId=" + resp.UserSessionId + "&bta=" + $rootScope.affiliateId;
                         } else {
                             $scope.signupError = true;
-                            if (Array.isArray(resp)) {
-                                $scope.signupErrorText = resp;
-                            } else {
-                                var err = { ErrorMessage: resp };
-                                $scope.signupErrorText.push(err);
-                            }
+
+                            var err = { ErrorMessage: resp.error_msg };
+                            $scope.signupErrorText.push(err);
                         }
                     });
                 }
@@ -1450,61 +1467,61 @@ angular.module('ngCart', ['ngCart.directives'])
             }
 
             $scope.submitOrderNewCreditCard = function (creditcard) {
-                $scope.creditCardError = "";
+                $scope.creditCardError = [];
                 $scope.creditCard = false;
 
                 if (typeof (creditcard) === 'undefined') {
                     $scope.creditCard = true;
-                    $scope.creditCardError = "Enter credit card";
+                    $scope.creditCardError.push({ErrorMessage:"Enter credit card"});
                     return;
                 }
                 if (!creditcard.terms) {
                     $scope.creditCard = true;
-                    $scope.creditCardError = "Please agree with our Terms and Conditions!";
+                    $scope.creditCardError.push({ ErrorMessage: "Please agree with our Terms and Conditions!" });
                     return;
                 }
                 if (typeof (creditcard.CardHolderName) === 'undefined' || creditcard.CardHolderName.length < 2) {
                     $scope.creditCard = true;
-                    $scope.creditCardError = " Please type your full name";
+                    $scope.creditCardError.push({ ErrorMessage: "Please type your full name" });
                     return;
                 }
                 if (typeof (creditcard.CreditCardNumber) === 'undefined' || creditcard.CreditCardNumber.length < 10) {
                     $scope.creditCard = true;
-                    $scope.creditCardError = "Credit card number length is invalid";
+                    $scope.creditCardError.push({ ErrorMessage: "Card Number is not a valid credit card number" });
                     return;
                 }
                 if (typeof (creditcard.expiration) === 'undefined') {
                     $scope.creditCard = true;
-                    $scope.creditCardError = "Please insert Expiration Date";
+                    $scope.creditCardError.push({ ErrorMessage: "Please insert Expiration Date" });
                     return;
                 }
                 if (typeof (creditcard.expiration.year) === 'undefined') {
                     $scope.creditCard = true;
-                    $scope.creditCardError = "Please insert Expiration Year";
+                    $scope.creditCardError.push({ ErrorMessage: "Please insert Expiration Year" });
                     return;
                 }
                 if (typeof (creditcard.expiration.month) === 'undefined') {
                     $scope.creditCard = true;
-                    $scope.creditCardError = "Please insert Expiration Month";
+                    $scope.creditCardError.push({ ErrorMessage: "Please insert Expiration Month" });
                     return;
                 }
-                if (typeof (creditcard.Cvv) === 'undefined' || creditcard.Cvv.length < 2) {
+                if (typeof (creditcard.Cvv) === 'undefined' || creditcard.Cvv.length < 3) {
                     $scope.creditCard = true;
-                    $scope.creditCardError = "Please insert your cvv number";
+                    $scope.creditCardError.push({ ErrorMessage: "Please insert your cvv number" });
                     return;
                 }
 
-                var today = new Date();
-                var lastDay = new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate();
+                var lastDay = new Date(parseInt(creditcard.expiration.year), parseInt(creditcard.expiration.month), 0).getDate();
                 var expirationDate = creditcard.expiration.year + "-" + creditcard.expiration.month + "-" + lastDay;
 
+                var today = new Date();
                 today.setHours(0, 0, 0, 0);
                 var creditCardDate = new Date(expirationDate);
                 creditCardDate.setHours(0, 0, 0, 0);
 
                 if (creditCardDate < today) {
                     $scope.creditCard = true;
-                    $scope.creditCardError = "Please enter valid card expiration date!";
+                    $scope.creditCardErrorArr.push({ ErrorMessage: "Please enter valid card expiration date" });
                     return;
                 }
 
@@ -1529,7 +1546,7 @@ angular.module('ngCart', ['ngCart.directives'])
                     } else {
                         $('#middle').removeClass('loading');
                         $scope.creditCard = true;
-                        $scope.creditCardError = resp.ErrorMessage;
+                        $scope.creditCardError.push({ ErrorMessage:resp.error_msg });
                         return;
                     }
                 });
@@ -1561,6 +1578,8 @@ angular.module('ngCart', ['ngCart.directives'])
 
                 LottoyardService.submitOrder(data).then(function (resp) {
                     console.log(resp);
+                    //debugger;
+                    $scope.paymentMethodError = false;
                     if (resp.IsSuccess) {
                         if (ngCart.getProcessor() !== 'CreditCard') {
                             if (resp.StatusCode === 0) {
@@ -1578,7 +1597,7 @@ angular.module('ngCart', ['ngCart.directives'])
                                 }).trigger("click");
                             } else {
                                 $scope.creditCard = true;
-                                $scope.creditCardError = resp.ErrorMessage;
+                                $scope.creditCardError = resp.error_msg;
                             }
                         } else {
                             window.location = '/thankyou/' + resp.Pmc + "/";
@@ -1600,7 +1619,7 @@ angular.module('ngCart', ['ngCart.directives'])
                             }).trigger("click");
                         } else {
                             $scope.creditCard = true;
-                            $scope.creditCardError = resp.ErrorMessage;
+                            $scope.creditCardError = resp.error_msg;
                         }
                     }
                 });
@@ -1674,7 +1693,9 @@ angular.module('ngCart', ['ngCart.directives'])
                 if (item.getQuantity() < 1) {
                     return;
                 }
-
+                if($scope.isAuthenticated) {
+                    $('.linesdraws.lines').addClass('loading');
+                }
                 item.setQuantity(item.getQuantity() + 1); //service.getProductPriceById = function (productId, draws, lotteryType
 
                 var priceForDraws = LottoyardService.getProductPriceById(item.getProductType(), item.getNumberOfDraws(), item.getLotteryType()).Price;
@@ -1693,6 +1714,9 @@ angular.module('ngCart', ['ngCart.directives'])
             $scope.removeQuantity = function removeQuantity(item) {
                 if (item.getQuantity() <= 1) {
                     return;
+                }
+                if($scope.isAuthenticated) {
+                    $('.linesdraws.lines').addClass('loading');
                 }
                 item.setQuantity(item.getQuantity() - 1);
 
@@ -1715,6 +1739,9 @@ angular.module('ngCart', ['ngCart.directives'])
             $scope.addShare = function addShare(item) {
                 // debugger;
                 if (item.getGroupnoshares() < 150) {
+                    if($scope.isAuthenticated){
+                        $('.linesdraws.lines').addClass('loading');
+                    }
                     var currentShares = item.getGroupnoshares();
 
                     item.setGroupnoshares(currentShares + 1);
@@ -1746,6 +1773,9 @@ angular.module('ngCart', ['ngCart.directives'])
             $scope.removeShare = function removeShare(item) {
                 //debugger;
                 if (item.getGroupnoshares() > 1) {
+                    if($scope.isAuthenticated){
+                        $('.linesdraws.lines').addClass('loading');
+                    }
                     var currentShares = item.getGroupnoshares();
                     item.setGroupnoshares(currentShares - 1);
                     //calculate price
@@ -1781,9 +1811,12 @@ angular.module('ngCart', ['ngCart.directives'])
             }
 
             $scope.addLine = function addLine(item) {
+
                 console.log(item);
                 if (item.getMaxLines() > item.getNumberOfLines()) {
-
+                    if($scope.isAuthenticated) {
+                        $('.linesdraws.lines').addClass('loading');
+                    }
                     //generate random numbers
                     var generatedNumbers = [];
                     var generatedExtraNumbers = [];
@@ -1876,6 +1909,9 @@ angular.module('ngCart', ['ngCart.directives'])
             $scope.removeLine = function removeLine(item) {
                 //debugger;
                 if (item.getMinLines() !== item.getNumberOfLines()) {
+                    if($scope.isAuthenticated){
+                        $('.linesdraws.lines').addClass('loading');
+                    }
                     item.setNumberOfLines(item.getNumberOfLines() - 1);
 
                     item.removeLastLine();
@@ -1926,15 +1962,17 @@ angular.module('ngCart', ['ngCart.directives'])
             }
 
             $scope.removeDraw = function removeDraw(item) {
-                // debugger;
+                //debugger;
                 var drawOptionsNormal = item.getProductsDrawOptions();
                 var drawOptions = cleanArray(reverse(drawOptionsNormal));
 
                 var currentDraw = 0;
 
                 if (item.getSelectedTab() === "groupselection" || item.getProductType() === 3) {
+
                     currentDraw = item.getGroupnodraws();
                 } else {
+
                     currentDraw = item.getNumberOfDraws();
                 }
 
@@ -1963,7 +2001,9 @@ angular.module('ngCart', ['ngCart.directives'])
                 }
 
                 if (typeof nextDraw !== 'undefined') {
-
+                    if($scope.isAuthenticated) {
+                        $('.linesdraws.draws').addClass('loading');
+                    }
                     var price = 0;
                     var discount = 0;
 
@@ -2183,6 +2223,7 @@ angular.module('ngCart', ['ngCart.directives'])
                 ngCart.setIframePaymentMethods(resp.IframePaymentMethods);
                 //setting up default method id for drop down
                 if (resp.IframePaymentMethods.length > 0) {
+                    //debugger;
                     $scope.selectedmethod = resp.IframePaymentMethods[0];
                     ngCart.setPaymentMethodId(resp.IframePaymentMethods[0].MethodId);
                     ngCart.setProcessor(resp.IframePaymentMethods[0].Processor);
@@ -2237,8 +2278,11 @@ angular.module('ngCart', ['ngCart.directives'])
             }
 
             function addDraw(item, nextDraw) {
-
+                //debugger;
                 if (typeof nextDraw !== 'undefined') {
+                    if($scope.isAuthenticated) {
+                        $('.linesdraws.draws').addClass('loading');
+                    }
                     //debugger;
                     var price = 0;
                     var discount = 0;
@@ -2315,7 +2359,8 @@ angular.module('ngCart', ['ngCart.directives'])
             function reverse(array) {
                 var result = [];
                 var i = null;
-                for (i = length - 1; i >= 0; i -= 1) {
+                var arrSize = array.length;
+                for (i = arrSize - 1; i >= 0; i -= 1) {
                     result.push(array[i]);
                 }
 
@@ -2340,7 +2385,7 @@ angular.module('ngCart', ['ngCart.directives'])
 
                 LottoyardService.submitOrder(mappedCart).then(function (resp) {
                     //debugger;
-                    console.log(resp);
+                    console.log('submitOrder:' + resp);
                     if (resp.IsSuccess) {
                         window.location = '/thankyou/' + resp.Pmc + "/";
                     } else {
@@ -2360,9 +2405,9 @@ angular.module('ngCart', ['ngCart.directives'])
                             }).trigger("click");
                         } else {
                             $scope.creditCard = true;
-                            $scope.creditCardError = resp.ErrorMessage;
+                            $scope.creditCardError = resp.error_msg;
                             $scope.paymentMethodError = true;
-                            $scope.paymentMethodErrorText = resp.ErrorMessage;
+                            $scope.paymentMethodErrorText = resp.error_msg;
                         }
 
                     }
@@ -2522,8 +2567,8 @@ angular.module('ngCart', ['ngCart.directives'])
         $scope.depositFunds = function (selectedMethod, depositAmount,terms) {
             //debugger;
             if (!terms) {
-                $scope.statusclass = "error";
-                $scope.status =  "Please agree with our Terms and Conditions!";
+                $scope.paymentMethodError = true;
+                $scope.paymentMethodErrorText = "Please agree with our Terms and Conditions!";
                 return;
             }
 
@@ -2533,7 +2578,9 @@ angular.module('ngCart', ['ngCart.directives'])
                 return;
             }
 
-            if (typeof (depositAmount) === 'undefined' || depositAmount === '' || depositAmount === 0) {
+            if (typeof (depositAmount) === 'undefined' || depositAmount === '' || depositAmount === 0 || depositAmount < 5) {
+                $scope.paymentMethodError = true;
+                $scope.paymentMethodErrorText = "The Min Deposit Is 5EUR";
                 return;
             }
 
@@ -2549,8 +2596,11 @@ angular.module('ngCart', ['ngCart.directives'])
             };
 
             LottoyardService.depositFunds(JSON.stringify(data)).then(function (resp) {
-                console.log(resp);
+
+                $scope.creditCardError = [];
+
                 if (resp.IsSuccess) {
+                    $scope.paymentMethodError = false;
                     $scope.status = resp.Status;
                     $scope.status = "Thank you , your deposit was successful!";
                     $scope.statusclass = "ok";
@@ -2573,9 +2623,8 @@ angular.module('ngCart', ['ngCart.directives'])
                     }
 
                 } else {
-
-                    $scope.statusclass = "error";
-                    $scope.status = resp.ErrorMessage;
+                    $scope.creditCard = true;
+                    $scope.creditCardError.push({ ErrorMessage: resp.error_msg });
                 }
             });
         };
@@ -2583,53 +2632,54 @@ angular.module('ngCart', ['ngCart.directives'])
         $scope.paymentSelect = function (payment) {
             console.log(payment);
             ngCart.setProcessor(payment.processor);
+            $scope.creditCard = false;
             $scope.status = "";
             $scope.extraInfo = payment.name;
         }
 
         $scope.submitOrderNewCreditCard = function (creditcard, depositAmount) {
-            $scope.creditCardError = "";
+            $scope.creditCardError = [];
             $scope.creditCard = false;
             //debugger;
 
             if (typeof (creditcard) === 'undefined') {
                 $scope.creditCard = true;
-                $scope.creditCardError = "Enter credit card";
+                $scope.creditCardError.push({ ErrorMessage: "Enter credit card" });
                 return;
             }
             if (!creditcard.terms) {
                 $scope.creditCard = true;
-                $scope.creditCardError = "Please agree with our Terms and Conditions!";
+                $scope.creditCardError.push({ ErrorMessage: "Please agree with our Terms and Conditions!" });
                 return;
             }
             if (typeof (creditcard.CardHolderName) === 'undefined' || creditcard.CardHolderName.length < 2) {
                 $scope.creditCard = true;
-                $scope.creditCardError = " Please type your full name";
+                $scope.creditCardError.push({ ErrorMessage: "Please type your full name" });
                 return;
             }
             if (typeof (creditcard.CreditCardNumber) === 'undefined' || creditcard.CreditCardNumber.length < 10) {
                 $scope.creditCard = true;
-                $scope.creditCardError = "Credit card number length is invalid";
+                $scope.creditCardError.push({ ErrorMessage: "Credit card number length is invalid" });
                 return;
             }
             if (typeof (creditcard.expiration) === 'undefined') {
                 $scope.creditCard = true;
-                $scope.creditCardError = "Please insert Expiration Date";
+                $scope.creditCardError.push({ ErrorMessage: "Please insert Expiration Date" });
                 return;
             }
             if (typeof (creditcard.expiration.year) === 'undefined') {
                 $scope.creditCard = true;
-                $scope.creditCardError = "Please insert Expiration Year";
+                $scope.creditCardError.push({ ErrorMessage: "Please insert Expiration Year" });
                 return;
             }
             if (typeof (creditcard.expiration.month) === 'undefined') {
                 $scope.creditCard = true;
-                $scope.creditCardError = "Please insert Expiration Month";
+                $scope.creditCardError.push({ ErrorMessage: "Please insert Expiration Month" });
                 return;
             }
-            if (typeof (creditcard.Cvv) === 'undefined' || creditcard.Cvv.length < 2) {
+            if (typeof (creditcard.Cvv) === 'undefined' || creditcard.Cvv.length < 3) {
                 $scope.creditCard = true;
-                $scope.creditCardError = "Please insert your cvv number";
+                $scope.creditCardError.push({ ErrorMessage: "Please insert your cvv number" });
                 return;
             }
 
@@ -2644,7 +2694,7 @@ angular.module('ngCart', ['ngCart.directives'])
 
             if (creditCardDate < today) {
                 $scope.creditCard = true;
-                $scope.creditCardError = "Please enter valid card expiration date!";
+                $scope.creditCardError.push({ ErrorMessage: "Please enter valid card expiration date!" });
                 return;
             }
 
@@ -2665,13 +2715,15 @@ angular.module('ngCart', ['ngCart.directives'])
                     CardHolderName: creditcard.CardHolderName
                 }
             };
+            //debugger;
             LottoyardService.depositFunds(JSON.stringify(data)).then(function (resp) {
                 console.log(resp);
+                //debugger;
                 if (resp.IsSuccess) {
                      window.location = '/thankyou?deposit-funds';
                 } else {
                     $scope.creditCard = true;
-                    $scope.creditCardError = resp.ErrorMessage;
+                    $scope.creditCardError.push({ ErrorMessage: resp.error_msg });
                     return;
                 }
             });
@@ -2710,6 +2762,9 @@ angular.module('ngCart', ['ngCart.directives'])
             };
 
             LottoyardService.depositFunds(JSON.stringify(data)).then(function (resp) {
+
+                $scope.creditCardError = [];
+
                 if (resp.IsSuccess) {
                     $scope.status = resp.Status;
                     if (ngCart.getProcessor() !== 'CreditCard') {
@@ -2732,9 +2787,9 @@ angular.module('ngCart', ['ngCart.directives'])
                     }
 
                 } else {
-                    $scope.status = resp.ErrorMessage;
+                    $scope.creditCard = true;
+                    $scope.creditCardError.push({ ErrorMessage: resp.error_msg });
                 }
-
             });
         };
 
@@ -3016,7 +3071,8 @@ angular.module('ngCart', ['ngCart.directives'])
         var specialNumbers = '';
 
         if (!emptyLine) {
-            if (currentLine.indexOf('#') !== -1) {
+            var indexOfStartSpecialNumber = currentLine.indexOf('#');
+            if (indexOfStartSpecialNumber !== -1) {
                 console.log(currentLine);
                 specialNumbers = currentLine.substr(parseInt(currentLine.indexOf(('#')) + 1));
 
@@ -3024,9 +3080,13 @@ angular.module('ngCart', ['ngCart.directives'])
                 console.log(specialNumbers);
                 specialNumbers = specialNumbers.map(function (x) { return parseInt(x); });
             }
-            //var currentLineSplited = currentLine.substr(0, parseInt(currentLine.indexOf(('#')))).split(',');
+            var currentLineSplited;
+            if (indexOfStartSpecialNumber === -1) {
+                currentLineSplited = currentLine.split(',');
+            } else {
+                currentLineSplited = currentLine.slice(0, indexOfStartSpecialNumber).split(',');
+            }
 
-            var currentLineSplited = currentLine.split(',');
             currentLineSplited = currentLineSplited.map(function (x) { return parseInt(x); });
 
             console.log(currentLineSplited);
@@ -3139,6 +3199,7 @@ angular.module('ngCart.directives', ['ngCart.fulfilment'])
                  }
              },
              link: function (scope, element, attrs) {
+                 //debugger;
                  scope.beforeCheckOutCall();
              }
          };
@@ -3345,6 +3406,18 @@ angular.module('ngCart.fulfilment', [])
         });
     }
 
+    function updateUserBalance() {
+        var datastring = "action=lottery_data&m=userinfo/get-member-money-balance";
+        jQuery.ajax({
+            type: "POST",
+            url: CONFIG.adminURL,
+            data: datastring,
+            success: function() {
+                $('.mainpaymenttabs').removeClass('loading');
+            }
+        });
+    }
+
     service.getLotteryById = function getLotteryById(id) {
         var idcache = 'lottery-rules';
 
@@ -3387,7 +3460,7 @@ angular.module('ngCart.fulfilment', [])
                method: 'POST',
                cache: CacheFactory.get('cachelottoyard'),
                url: RESTApiUrl,
-               timeout: 2500,
+               timeout: 25000,
                headers: {
                    'Content-Type': 'application/x-www-form-urlencoded'
                },
@@ -3441,7 +3514,7 @@ angular.module('ngCart.fulfilment', [])
                method: 'POST',
                cache: CacheFactory.get('cachelottoyard'),
                url: RESTApiUrl,
-               timeout: 2500,
+               timeout: 25000,
                headers: {
                    'Content-Type': 'application/x-www-form-urlencoded'
                },
@@ -3527,7 +3600,7 @@ angular.module('ngCart.fulfilment', [])
     service.prepareOrder = function (data) {
 
         var deffered = $q.defer();
-        // console.log('prepare-order', data);
+         console.log('prepare-order', data);
         $http({
             method: 'POST',
             url: RESTApiUrl,
@@ -3536,6 +3609,8 @@ angular.module('ngCart.fulfilment', [])
             },
             data: 'action=lottery_data&m=cashier/prepare-order&data=' + encodeURIComponent(data)
         }).success(function (resp) {
+            $('.linesdraws.draws').removeClass('loading');
+            $('.linesdraws.lines').removeClass('loading');
             var parsedResp;
             try {
                 parsedResp = resp;
@@ -3543,8 +3618,8 @@ angular.module('ngCart.fulfilment', [])
                 console.error("Parsing cashier/prepare-order Error: %s Response: %s", e, resp);
                 deffered.reject('There was an error');
             }
-
-            // console.log(parsedResp);
+            //debugger;
+            console.log('resp-prepare-order' + parsedResp);
 
             deffered.resolve(parsedResp);
 
@@ -3567,10 +3642,12 @@ angular.module('ngCart.fulfilment', [])
             data: 'action=lottery_data&m=cashier/processor-confirm-order&data=' + encodeURIComponent(data)
         }).success(function (dataResp) {
             var resp;
+            //debugger;
             try {
                 resp = dataResp;
+                updateUserBalance();
             } catch (e) {
-                console.error("Parsing cashier/processor-confirm-order Error: %s Response: %s", e, dataResp);
+                console.error("Parsing cashier/processor-confirm-order Error: %s Response: %s", e, dataResp.error_msg);
                 deffered.reject('There was an error');
             }
             console.log(resp);
@@ -3602,7 +3679,7 @@ angular.module('ngCart.fulfilment', [])
             try {
                 resp = data;
             } catch (e) {
-                console.error("Parsing cashier/get-member-payment-methods Error: %s Response: %s", e, data);
+                console.error("Parsing cashier/get-member-payment-methods Error: %s Response: %s", e, data.error_msg);
                 deffered.reject('There was an error');
             }
             console.log(resp);
@@ -3619,7 +3696,7 @@ angular.module('ngCart.fulfilment', [])
     };
 
     service.depositFunds = function (data) {
-
+        $('.mainpaymenttabs').addClass('loading');
         var deffered = $q.defer();
 
         $http({
@@ -3633,8 +3710,9 @@ angular.module('ngCart.fulfilment', [])
             var resp;
             try {
                 resp = data;
+                updateUserBalance();
             } catch (e) {
-                console.error("Parsing cashier/deposit-fundss Error: %s Response: %s", e, data);
+                console.error("Parsing cashier/deposit-fundss Error: %s Response: %s", e, data.error_msg);
                 deffered.reject('There was an error');
             }
             console.log(resp);
@@ -3664,7 +3742,7 @@ angular.module('ngCart.fulfilment', [])
             try {
                 parsedResp = resp;
             } catch (e) {
-                console.error("Parsing cashier/deposit-fundss Error: %s Response: %s", e, resp);
+                console.error("Parsing cashier/deposit-fundss Error: %s Response: %s", e, resp.error_msg);
                 deffered.reject('There was an error');
             }
             console.log(parsedResp);
@@ -3693,7 +3771,7 @@ angular.module('ngCart.fulfilment', [])
             try {
                 parsedResp = resp;
             } catch (e) {
-                console.error("Parsing cashier/deposit-fundss Error: %s Response: %s", e, resp);
+                console.error("Parsing cashier/deposit-fundss Error: %s Response: %s", e, resp.error_msg);
                 deffered.reject('There was an error');
             }
             // console.log(parsedResp);
@@ -3706,8 +3784,6 @@ angular.module('ngCart.fulfilment', [])
         return deffered.promise;
     }
 
-
-
     //here we are adding products support
     if (typeof (Products) !== 'undefined' && Products.length > 0) {
         service.getProductPrices = function getProductPrices() {
@@ -3719,7 +3795,7 @@ angular.module('ngCart.fulfilment', [])
             });
 
             var deffered = $q.defer();
-            deffered.resolve(dataCache.get(id));
+
             if (dataCache.get(id)) {
                deffered.resolve(dataCache.get(id));
             } else {
@@ -3727,7 +3803,7 @@ angular.module('ngCart.fulfilment', [])
                    method: 'POST',
                    cache: CacheFactory.get('cachelottoyard'),
                    url: RESTApiUrl,
-                   timeout: 2500,
+                   timeout: 25000,
                    headers: {
                        'Content-Type': 'application/x-www-form-urlencoded'
                    },
@@ -3737,7 +3813,7 @@ angular.module('ngCart.fulfilment', [])
                    try {
                        resp = data;
                    } catch (e) {
-                       console.error("Parsing globalinfo/get-prices-by-brand-and-productid Error: %s Response: %s", e, data);
+                       console.error("Parsing globalinfo/get-prices-by-brand-and-productid Error: %s Response: %s", e, data.error_msg);
                        deffered.reject('There was an error');
                    }
                    getProductPricesCompleted = true;
@@ -3812,8 +3888,9 @@ angular.module('ngCart.fulfilment', [])
             data: 'action=lottery_data&m=userinfo/signup&' + data
         }).success(function (resp) {
             var parsedResp;
+            //debugger;
             try {
-                parsedResp = resp.error_msg;
+                parsedResp = resp;
             } catch (e) {
                 console.error("Parsing signup/signup-internal Error: %s Response: %s", e, resp.error_msg);
             }
@@ -3840,7 +3917,7 @@ angular.module('ngCart.fulfilment', [])
                 method: 'POST',
                 cache: CacheFactory.get('cachelottoyard'),
                 url: RESTApiUrl,
-                timeout: 2500,
+                timeout: 25000,
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded'
                 },
@@ -3850,7 +3927,7 @@ angular.module('ngCart.fulfilment', [])
                 try {
                     resp = data;
                 } catch (e) {
-                    console.error("Parsing globalinfo/get-all-brand-draws Error: %s Response: %s", e, data);
+                    console.error("Parsing globalinfo/get-all-brand-draws Error: %s Response: %s", e, data.error_msg);
                     deffered.reject('There was an error');
                 }
                 getProductPricesCompleted = true;

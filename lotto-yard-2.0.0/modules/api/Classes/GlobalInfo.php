@@ -1,12 +1,5 @@
 <?php
 
-/**
- * Created by PhpStorm.
- * User: yanislav
- * Date: 9/9/15
- * Time: 3:10 PM
- */
-
 require dirname(__FILE__) . '/../Data/Data.php';
 
 class GlobalInfo extends Data
@@ -14,8 +7,8 @@ class GlobalInfo extends Data
     public function getAllBrandDraws()
     {
         $this->processedData = array(
-            'BrandId'           => BRAND_ID,
-            'BasePricesEnabled' => true,
+            'BrandId'           => BRAND_ID
+            //'BasePricesEnabled' => true,
         );
     }
 

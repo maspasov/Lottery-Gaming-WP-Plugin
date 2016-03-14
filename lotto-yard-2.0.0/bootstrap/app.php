@@ -13,9 +13,10 @@
     /**
      * Include Admin Options
      */
+    include_once(LOTTO_PLUGIN_ROOT.'admin/admin.php');
     include_once(LOTTO_PLUGIN_ROOT.'admin/theme-options.php');
     include_once(LOTTO_PLUGIN_ROOT.'admin/custom-fields.php');
-    include_once(LOTTO_PLUGIN_ROOT.'public/data-arrays.php');
+
 
     $whitelist = array('127.0.0.1', "::1");
     define('IS_LOCALHOST', in_array($_SERVER['REMOTE_ADDR'], $whitelist));
@@ -25,6 +26,12 @@
     define('BRAND_ID', carbon_get_theme_option('lotto_brand_id'));
     define('NG_CART', carbon_get_theme_option('lotto_ngcart'));
     define('SITE_CURRENCY', carbon_get_theme_option('lotto_currency'));
+
+    /**
+     * Include Data Arrays & Data from API Data from API
+     */
+    include_once(LOTTO_PLUGIN_ROOT.'helpers/data-arrays.php');
+    include_once(LOTTO_PLUGIN_ROOT.'helpers/data-transients.php');
 
     /**
      * Include Modules

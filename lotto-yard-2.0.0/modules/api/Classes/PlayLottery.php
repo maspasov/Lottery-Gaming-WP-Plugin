@@ -1,12 +1,5 @@
 <?php
 
-/**
- * Created by PhpStorm.
- * User: yanislav
- * Date: 9/10/15
- * Time: 10:53 AM
- */
-
 require dirname(__FILE__) . '/../Data/Data.php';
 
 class PlayLottery extends Data

@@ -30,9 +30,9 @@ class ErrorHandler
         $result      = false;
 
         if (is_array($decodedData)) {
-            if (isset($decodedData['ErrorMessage']) && $decodedData['ErrorMessage'] !== "None") {
+            if (!empty($decodedData['ErrorMessage']) && $decodedData['ErrorMessage'] !== "None") {
                 $this->data = array('error_msg' => $decodedData['ErrorMessage']);
-            } elseif (isset($decodedData[0]['ErrorMessage']) && $decodedData['ErrorMessage'] !== "None") {
+            } elseif (!empty($decodedData[0]['ErrorMessage']) && $decodedData[0]['ErrorMessage'] !== "None") {
                 $this->data = array('error_msg' => $decodedData[0]['ErrorMessage']);
             } else {
                 $this->data = $decodedData;
