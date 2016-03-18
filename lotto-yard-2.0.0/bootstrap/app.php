@@ -37,7 +37,7 @@
      * Include Modules
      */
     if (NG_CART) {
-        include_once(LOTTO_PLUGIN_ROOT.'modules/cart/Cart.php');
+        include_once(LOTTO_PLUGIN_ROOT.'modules/cart/cart.php');
     }
 
     if (!class_exists('Init')) {

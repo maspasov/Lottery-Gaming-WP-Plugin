@@ -34,7 +34,7 @@ include_once(LOTTO_PLUGIN_ROOT.'data-arrays.php');
 $whitelist = array('127.0.0.1', "::1");
 define('IS_LOCALHOST', in_array($_SERVER['REMOTE_ADDR'], $whitelist));
 
-if (true) { //TODO - crb option for cart in admin panel
+if (false) { //TODO - crb option for cart in admin panel
     include_once(LOTTO_PLUGIN_ROOT.'cart/Cart.php');
 }
 
@@ -80,6 +80,7 @@ define('TOKEN', carbon_get_theme_option('lotto_access_token')); //'PlamenToken89
 define('BASE_API_URL', carbon_get_theme_option('lotto_base_api_url'));//'https://5.100.249.154/api/'
 define('CASHIER_URL', carbon_get_theme_option('lotto_cashier_url')); //'https://5.100.249.154/Cashier/'
 define('BRAND_ID', carbon_get_theme_option('brand_id'));
+define('SITE_CURRENCY', carbon_get_theme_option('currency'));
 
 /* Reblaze client IP */
 if (!empty($_SERVER["HTTP_X_REAL_IP"])) {

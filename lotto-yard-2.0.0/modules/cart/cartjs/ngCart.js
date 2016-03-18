@@ -1983,7 +1983,9 @@ angular.module('ngCart', ['ngCart.directives'])
                         return false;
                     }
                 });
-
+                if (nextDraws.length > 1) {
+                    nextDraws = nextDraws.sort(dynamicSortDescending('NumberOfDraws'));
+                }
                 var nextDraw = nextDraws[0];
 
                 if (typeof nextDraw !== 'undefined' && typeof (nextDraw.MinLines) !== 'undefined' && typeof (nextDraw.MaxLines) !== 'undefined') {
@@ -2417,6 +2419,18 @@ angular.module('ngCart', ['ngCart.directives'])
             function getRandomInt(min, max) {
                 return Math.floor(Math.random() * (max - min + 1)) + min;
             };
+
+            function dynamicSortDescending(property) {
+                var sortOrder = 1;
+                if(property[0] === "-") {
+                    sortOrder = -1;
+                    property = property.substr(1);
+                }
+                return function (a,b) {
+                    var result = (a[property] > b[property]) ? -1 : (a[property] < b[property]) ? 1 : 0;
+                    return result * sortOrder;
+                }
+            }
 
             console.log(ngCart);
 
@@ -3452,7 +3466,7 @@ angular.module('ngCart.fulfilment', [])
         var id = 'lottery-rules';
 
         var deffered = $q.defer();
-        deffered.resolve(dataCache.get(id));
+     
         if (dataCache.get(id)) {
            deffered.resolve(dataCache.get(id));
         } else {
@@ -3506,7 +3520,7 @@ angular.module('ngCart.fulfilment', [])
         var id = 'product-rules';
 
         var deffered = $q.defer();
-        deffered.resolve(dataCache.get(id));
+     
         if (dataCache.get(id)) {
            deffered.resolve(dataCache.get(id));
         } else {
